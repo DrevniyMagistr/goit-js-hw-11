@@ -15,7 +15,7 @@ export const pagesCount = () => {
 };
 
 export const makeActiveButton = () => {
-  pagesCount() < dataApi.page - 1
+  pagesCount() > dataApi.page - 1
     ? refs.moreBtn.classList.add('is-hidden')
     : refs.moreBtn.classList.remove('is-hidden');
 };
