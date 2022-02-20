@@ -26,15 +26,17 @@ export default class DataApiService {
     try {
       const response = await axios.get(API_URL, this.request);
       const { hits, total, totalHits } = await response.data;
-  
+
       this.totalHits = total;
-  
-      if (response.status.ok) {
+
+      if (response.status === 200) {
         this.nextPage();
       }
-  
+
       return response.data;
-    } catch (error) {}
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   nextPage() {
@@ -49,11 +51,11 @@ export default class DataApiService {
     return this.searchQuery;
   }
 
-  get hits() {
-    return this.totalHits;
-  }
-
   set query(newQuery) {
     this.request.params.q = newQuery;
+  }
+
+  get hits() {
+    return this.totalHits;
   }
 }

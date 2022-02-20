@@ -2,20 +2,22 @@ import { Notify } from 'notiflix';
 import SimpleLightbox from 'simplelightbox';
 import 'simplelightbox/dist/simple-lightbox.min.css';
 import { refs } from '../refs/getRefs';
-import { message } from '../refs/message';
+import { okMessage, wrongMessage, emptyMessage} from './serviceMessage';
+import { makeMarkup, resetGallery, makeActiveButton, noMoreResource } from './actionFunction';
 import DataApiService from '../api/API-service';
-import cardTemplate from '../templates/card.hbs';
+// import cardTemplate from '../templates/card.hbs';
 
 let lightbox = new SimpleLightbox('.gallery a', {
-  captionsData: 'alt',
+  captionsData: 'title',
   captionType: 'alt',
   captionDelay: 200,
   captionPosition: 'bottom',
 });
 
-const dataApi = new DataApiService();
+export const dataApi = new DataApiService();
+refs.moreBtn.classList.add('is-hidden');
 
-function onSearch(e) {
+const onSearch = e => {
   e.preventDefault();
 
   const { searchQuery } = e.target;
@@ -23,7 +25,7 @@ function onSearch(e) {
   searchQuery.value.trim();
 
   if (searchQuery.value === '') {
-    return Notify.failure(message.empty);
+    return emptyMessage();
   }
 
   dataApi.query = searchQuery.value;
@@ -32,10 +34,7 @@ function onSearch(e) {
   dataApi
     .requestData()
     .then(data => {
-      const ok = `Hooray! We found ${dataApi.hits} images.`;
-
-      data.hits.length === 0 ? Notify.failure(message.wrong) : Notify.success(ok);
-
+      data.hits.length === 0 ? wrongMessage() : okMessage(data);
       return data.hits;
     })
     .then(hits => {
@@ -49,40 +48,43 @@ function onSearch(e) {
 
       noMoreResource();
     });
-}
+};
 
 function makeMoreVisible() {
   dataApi.requestData().then(data => {
     makeMarkup(data.hits);
+
     makeActiveButton();
+
     lightbox.refresh();
+
     noMoreResource();
   });
 }
 
-function makeMarkup(hits) {
-  refs.gallery.insertAdjacentHTML('beforeend', cardTemplate(hits));
-}
+// const makeMarkup = (hits) => {
+//   refs.gallery.insertAdjacentHTML('beforeend', cardTemplate(hits));
+// }
 
-function resetGallery() {
-  refs.gallery.innerHTML = '';
-}
+// const resetGallery = () => {
+//   refs.gallery.innerHTML = '';
+// }
 
-function makeActiveButton() {
-  pagesCount() > dataApi.page - 1
-    ? refs.moreBtn.classList.add('is-visible')
-    : refs.moreBtn.classList.remove('is-visible');
-}
+// const makeActiveButton = () => {
+//   pagesCount() > dataApi.page - 1
+//     ? refs.moreBtn.classList.add('is-hidden')
+//     : refs.moreBtn.classList.remove('is-hidden');
+// }
 
-function pagesCount() {
-  return Math.ceil(dataApi.totalHits / dataApi.request.params.per_page);
-}
+// const pagesCount = () => {
+//   return Math.ceil(dataApi.totalHits / dataApi.request.params.per_page);
+// }
 
-function noMoreResource() {
-  if (pagesCount() === dataApi.page - 1) {
-    return Notify.failure(message.end);
-  }
-}
+// const noMoreResource = () => {
+//   if (pagesCount() === dataApi.page - 1) {
+//     return endMessage();
+//   }
+// }
 
 refs.input.addEventListener('submit', onSearch);
 refs.moreBtn.addEventListener('click', makeMoreVisible);
