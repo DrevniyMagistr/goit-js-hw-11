@@ -2,10 +2,16 @@ import { Notify } from 'notiflix';
 import SimpleLightbox from 'simplelightbox';
 import 'simplelightbox/dist/simple-lightbox.min.css';
 import { refs } from '../refs/getRefs';
-import { okMessage, wrongMessage, emptyMessage} from './serviceMessage';
-import { makeMarkup, resetGallery, makeActiveButton, noMoreResource } from './actionFunction';
+import { okMessage, wrongMessage, emptyMessage } from './serviceMessage';
+import {
+  makeMarkup,
+  resetGallery,
+  makeActiveButton,
+  noMoreResource,
+  onScroll,
+  scrollToTop,
+} from './actionFunction';
 import DataApiService from '../api/API-service';
-// import cardTemplate from '../templates/card.hbs';
 
 let lightbox = new SimpleLightbox('.gallery a', {
   captionsData: 'alt',
@@ -16,6 +22,7 @@ let lightbox = new SimpleLightbox('.gallery a', {
 
 export const dataApi = new DataApiService();
 refs.moreBtn.classList.add('is-hidden');
+refs.topBtn.classList.add('is-hidden');
 
 const onSearch = e => {
   e.preventDefault();
@@ -57,12 +64,12 @@ function makeMoreVisible() {
     makeActiveButton();
 
     lightbox.refresh();
+    onScroll();
 
     noMoreResource();
   });
 }
 
-
-
 refs.input.addEventListener('submit', onSearch);
+refs.topBtn.addEventListener('click', scrollToTop);
 refs.moreBtn.addEventListener('click', makeMoreVisible);
