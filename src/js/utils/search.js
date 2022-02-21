@@ -8,11 +8,12 @@ import DataApiService from '../api/API-service';
 // import cardTemplate from '../templates/card.hbs';
 
 let lightbox = new SimpleLightbox('.gallery a', {
-  captionsData: 'title',
+  captionsData: 'alt',
   captionType: 'alt',
   captionDelay: 200,
   captionPosition: 'bottom',
 });
+lightbox.on('simple-lightbox');
 
 export const dataApi = new DataApiService();
 refs.moreBtn.classList.add('is-hidden');
