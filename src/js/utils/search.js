@@ -13,7 +13,6 @@ let lightbox = new SimpleLightbox('.gallery a', {
   captionDelay: 200,
   captionPosition: 'bottom',
 });
-lightbox.on('simple-lightbox');
 
 export const dataApi = new DataApiService();
 refs.moreBtn.classList.add('is-hidden');
